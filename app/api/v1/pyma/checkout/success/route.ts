@@ -31,6 +31,12 @@ export async function POST(request: Request) {
 
     // Get customer details
     const customer = await stripe.customers.retrieve(session.customer as string)
+
+    // Type guard: ensure customer is not deleted
+    if ('deleted' in customer && customer.deleted) {
+      throw new Error('Customer has been deleted')
+    }
+
     const email = customer.email
     const company = (customer.metadata?.company as string) || 'Unknown'
 
