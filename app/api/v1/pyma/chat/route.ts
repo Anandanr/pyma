@@ -8,7 +8,7 @@ const supabase = createClient(
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { api_key, message, faq_id } = body
+    const { api_key, message } = body
 
     if (!api_key || !message) {
       return Response.json(
