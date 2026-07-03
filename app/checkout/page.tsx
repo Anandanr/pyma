@@ -155,15 +155,9 @@ function CheckoutContent() {
           </form>
 
           {/* Info Box */}
-          {!success && (
-            <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100 text-sm text-blue-800">
-              <p>
-                {plan === 'free-trial'
-                  ? '✓ No credit card required. Full access for 14 days.'
-                  : '✓ Secure payment via Stripe. We never store your card details.'}
-              </p>
-            </div>
-          )}
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100 text-sm text-blue-800">
+            <p>✓ Secure payment via Stripe. 7-day free trial, cancel anytime.</p>
+          </div>
         </div>
       </div>
     </div>
