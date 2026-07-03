@@ -9,31 +9,11 @@ function DashboardContent() {
   const searchParams = useSearchParams()
   const apiKey = searchParams.get('api_key')
   const [copied, setCopied] = useState(false)
-  const [subscriptionData, setSubscriptionData] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
   }, [])
-
-  useEffect(() => {
-    // Fetch subscription data
-    const fetchData = async () => {
-      try {
-        if (apiKey) {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/pyma/usage?api_key=${apiKey}`)
-          const data = await response.json()
-          setSubscriptionData(data)
-        }
-      } catch (err) {
-        console.error('Failed to fetch subscription:', err)
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchData()
-  }, [apiKey])
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
