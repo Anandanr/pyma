@@ -1,12 +1,10 @@
 'use client'
 
 import { Suspense, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Loader2, ArrowLeft } from 'lucide-react'
 
 function CheckoutContent() {
-  const searchParams = useSearchParams()
   const plan = 'monthly' // Only monthly plan now with 7-day free trial
 
   const [email, setEmail] = useState('')
