@@ -1,15 +1,10 @@
 'use client'
 
-import { Suspense, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 import Link from 'next/link'
-import { PlanCard } from '@/components/PlanCard'
 import { ArrowLeft } from 'lucide-react'
 
 function EnrollContent() {
-  const searchParams = useSearchParams()
-  const [selectedPlan] = useState('monthly') // Only one plan now
-
   const handleContinue = () => {
     window.location.href = `/checkout?plan=monthly`
   }

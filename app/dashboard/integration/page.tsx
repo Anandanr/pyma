@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Copy, Check } from 'lucide-react'
 
-export default function IntegrationPage() {
+function IntegrationContent() {
   const searchParams = useSearchParams()
   const apiKey = searchParams.get('api_key') || ''
   const [copied, setCopied] = useState(false)
@@ -221,6 +221,14 @@ export default function IntegrationPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function IntegrationPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>}>
+      <IntegrationContent />
+    </Suspense>
   )
 }
 
