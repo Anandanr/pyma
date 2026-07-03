@@ -11,7 +11,6 @@ function CheckoutContent() {
   const [company, setCompany] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -84,90 +83,78 @@ function CheckoutContent() {
             </div>
           </div>
 
-          {success ? (
-            <div className="text-center py-8">
-              <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">✓</span>
-              </div>
-              <h3 className="text-2xl font-bold mb-2">You're all set!</h3>
-              <p className="text-gray-600 mb-4">
-                Redirecting to payment...
-              </p>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Email */}
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                  Email Address
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="you@company.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={loading}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50"
-                />
-              </div>
-
-              {/* Company */}
-              <div>
-                <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-2">
-                  Company Name
-                </label>
-                <input
-                  id="company"
-                  type="text"
-                  placeholder="Your Company"
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
-                  required
-                  disabled={loading}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50"
-                />
-              </div>
-
-              {/* Error */}
-              {error && (
-                <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
-                  {error}
-                </div>
-              )}
-
-              {/* Submit Button */}
-              <button
-                type="submit"
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Email */}
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                Email Address
+              </label>
+              <input
+                id="email"
+                type="email"
+                placeholder="you@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
                 disabled={loading}
-                className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-brand-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Processing...
-                  </>
-                ) : plan === 'free-trial' ? (
-                  'Start Free Trial'
-                ) : (
-                  'Continue to Payment'
-                )}
-              </button>
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50"
+              />
+            </div>
 
-              {/* Terms */}
-              <p className="text-xs text-gray-500 text-center mt-4">
-                By continuing, you agree to our{' '}
-                <a href="/terms" className="text-primary hover:underline">
-                  Terms of Service
-                </a>
-                {' '} and{' '}
-                <a href="/privacy" className="text-primary hover:underline">
-                  Privacy Policy
-                </a>
-              </p>
-            </form>
-          )}
+            {/* Company */}
+            <div>
+              <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-2">
+                Company Name
+              </label>
+              <input
+                id="company"
+                type="text"
+                placeholder="Your Company"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                required
+                disabled={loading}
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50"
+              />
+            </div>
+
+            {/* Error */}
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-brand-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Processing...
+                </>
+              ) : plan === 'free-trial' ? (
+                'Start Free Trial'
+              ) : (
+                'Continue to Payment'
+              )}
+            </button>
+
+            {/* Terms */}
+            <p className="text-xs text-gray-500 text-center mt-4">
+              By continuing, you agree to our{' '}
+              <a href="/terms" className="text-primary hover:underline">
+                Terms of Service
+              </a>
+              {' '} and{' '}
+              <a href="/privacy" className="text-primary hover:underline">
+                Privacy Policy
+              </a>
+            </p>
+          </form>
 
           {/* Info Box */}
           {!success && (
