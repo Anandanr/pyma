@@ -136,10 +136,8 @@ function CheckoutContent() {
                   <Loader2 className="w-4 h-4 animate-spin" />
                   Processing...
                 </>
-              ) : plan === 'free-trial' ? (
-                'Start Free Trial'
               ) : (
-                'Continue to Payment'
+                'Start 7-Day Free Trial'
               )}
             </button>
 
