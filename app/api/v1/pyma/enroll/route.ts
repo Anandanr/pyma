@@ -46,12 +46,12 @@ export async function POST(request: Request) {
       )
     }
 
-    // Check if email already exists
-    const { data: existingOrg } = await supabase
+    // Check if email already exists in database
+    const { data: existingOrg, error: checkError } = await supabase
       .from('pyma_organizations')
       .select('id, email')
       .eq('email', email)
-      .single()
+      .maybeSingle()
 
     if (existingOrg) {
       return Response.json(
@@ -60,13 +60,48 @@ export async function POST(request: Request) {
       )
     }
 
-    // Create Stripe customer
-    const customer = await stripe.customers.create({
-      email,
-      metadata: { company },
+    // Check if Stripe customer already exists with this email
+    const existingCustomers = await stripe.customers.list({
+      email: email,
+      limit: 1,
     })
 
+    let customer
+    if (existingCustomers.data.length > 0) {
+      // Use existing customer
+      customer = existingCustomers.data[0]
+      
+      // Check if customer already has active subscription (trials only apply to new subscriptions)
+      const existingSubscriptions = await stripe.subscriptions.list({
+        customer: customer.id,
+        status: 'active',
+        limit: 1,
+      })
+
+      if (existingSubscriptions.data.length > 0) {
+        return Response.json(
+          { error: { message: 'This email already has an active subscription.' } },
+          { status: 409 }
+        )
+      }
+
+      // Update metadata if needed
+      await stripe.customers.update(customer.id, {
+        metadata: { company },
+      })
+    } else {
+      // Create new Stripe customer
+      customer = await stripe.customers.create({
+        email,
+        metadata: { company },
+      })
+    }
+
     // Create Stripe Checkout session
+    // Calculate trial end date (7 full days from now)
+    // Using 8 days of seconds to account for Stripe's day counting
+    const trialEndDate = Math.floor(Date.now() / 1000) + (8 * 24 * 60 * 60)
+    
     const checkoutSession = await stripe.checkout.sessions.create({
       customer: customer.id,
       line_items: [
@@ -78,9 +113,11 @@ export async function POST(request: Request) {
       mode: 'subscription',
       payment_method_types: ['card'],
       subscription_data: {
-        trial_period_days: 7,
+        trial_end: trialEndDate,
         description: `${company} - PyMA subscription`,
       },
+      // Skip payment collection during trial
+      payment_method_collection: 'if_required',
       success_url: `${process.env.NEXT_PUBLIC_API_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_API_URL}/enroll`,
     })

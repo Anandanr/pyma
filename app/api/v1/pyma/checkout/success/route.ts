@@ -61,16 +61,16 @@ export async function POST(request: Request) {
     }
 
     // Check if organization already exists
-    const { data: existingOrg } = await supabase
+    const { data: existingOrg, error: checkError } = await supabase
       .from('pyma_organizations')
       .select('id')
       .eq('email', email)
-      .single()
+      .maybeSingle()
 
     if (existingOrg) {
       return Response.json(
-        { error: { message: 'Organization already exists for this email' } },
-        { status: 409 }
+        { success: true, message: 'Organization already exists for this email', organization: existingOrg },
+        { status: 200 }
       )
     }
 
@@ -94,10 +94,10 @@ export async function POST(request: Request) {
       ? new Date(subscription.trial_end * 1000)
       : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 
-    // Create organization in database
+    // Create or update organization in database (upsert)
     const { data, error } = await supabase
       .from('pyma_organizations')
-      .insert({
+      .upsert({
         email,
         company_name: company,
         api_key: apiKey,
@@ -108,10 +108,27 @@ export async function POST(request: Request) {
         trial_end_date: trialEndDate,
         billing_date: new Date(subscription.current_period_end * 1000),
         status: 'active',
+      }, {
+        onConflict: 'email'
       })
       .select()
 
     if (error) {
+      // If it's a duplicate key error, that's okay - just retrieve the existing organization
+      if (error.code === '23505') {
+        const { data: existingData } = await supabase
+          .from('pyma_organizations')
+          .select('*')
+          .eq('email', email)
+          .single()
+
+        return Response.json({
+          success: true,
+          organization: existingData,
+          apiKey: existingData?.api_key,
+          message: 'Organization already exists. Welcome back!',
+        })
+      }
       console.error('Database error:', error)
       throw error
     }
