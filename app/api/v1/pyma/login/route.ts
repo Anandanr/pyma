@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
 function getSupabase() {
@@ -18,10 +19,11 @@ const corsHeaders = {
 }
 
 export async function OPTIONS() {
-  return Response.json(null, {
-    status: 200,
-    headers: corsHeaders,
+  const response = new NextResponse(null, { status: 200 })
+  Object.entries(corsHeaders).forEach(([key, value]) => {
+    response.headers.set(key, value)
   })
+  return response
 }
 
 export async function POST(request: Request) {
