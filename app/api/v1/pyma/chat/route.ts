@@ -18,11 +18,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type',
 }
 
-// Handle OPTIONS requests
-export async function OPTIONS() {
-  return Response.json({}, { headers: corsHeaders })
-}
-
 export async function POST(request: Request) {
   try {
     const supabase = getSupabase()

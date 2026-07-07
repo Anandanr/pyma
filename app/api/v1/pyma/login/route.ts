@@ -18,14 +18,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type',
 }
 
-export async function OPTIONS() {
-  const response = new NextResponse(null, { status: 200 })
-  Object.entries(corsHeaders).forEach(([key, value]) => {
-    response.headers.set(key, value)
-  })
-  return response
-}
-
 export async function POST(request: Request) {
   try {
     const supabase = getSupabase()
