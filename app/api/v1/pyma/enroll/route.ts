@@ -24,7 +24,7 @@ function getStripe() {
   })
 }
 
-export async function OPTIONS(request: Request) {
+export async function OPTIONS() {
   return new Response(null, {
     status: 200,
     headers: {

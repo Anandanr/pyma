@@ -19,7 +19,7 @@ const corsHeaders = {
 }
 
 // Handle OPTIONS requests
-export async function OPTIONS(request: Request) {
+export async function OPTIONS() {
   return Response.json({}, { headers: corsHeaders })
 }
 
