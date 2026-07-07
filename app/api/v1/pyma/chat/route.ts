@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { corsResponse } from '@/lib/cors'
 
 function getSupabase() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -11,11 +12,8 @@ function getSupabase() {
   return createClient(supabaseUrl, supabaseServiceRoleKey)
 }
 
-// CORS headers
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+export async function OPTIONS() {
+  return corsResponse(null, 200)
 }
 
 export async function POST(request: Request) {
@@ -25,9 +23,9 @@ export async function POST(request: Request) {
     const { api_key, message } = body
 
     if (!api_key || !message) {
-      return Response.json(
+      return corsResponse(
         { error: { message: 'API key and message are required' } },
-        { status: 400, headers: corsHeaders }
+        400
       )
     }
 
@@ -39,9 +37,9 @@ export async function POST(request: Request) {
       .single()
 
     if (orgError || !org) {
-      return Response.json(
+      return corsResponse(
         { error: { message: 'Invalid API key' } },
-        { status: 401, headers: corsHeaders }
+        401
       )
     }
 

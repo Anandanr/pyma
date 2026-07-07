@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { corsResponse } from '@/lib/cors'
 
 export const dynamic = 'force-dynamic'
 
@@ -13,10 +14,8 @@ function getSupabase() {
   return createClient(supabaseUrl, supabaseServiceRoleKey)
 }
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+export async function OPTIONS() {
+  return corsResponse(null, 200)
 }
 
 export async function GET(request: Request) {
@@ -26,9 +25,9 @@ export async function GET(request: Request) {
     const api_key = url.searchParams.get('api_key')
 
     if (!api_key) {
-      return Response.json(
+      return corsResponse(
         { error: { message: 'API key is required' } },
-        { status: 400, headers: corsHeaders }
+        400
       )
     }
 
@@ -40,9 +39,9 @@ export async function GET(request: Request) {
       .single()
 
     if (orgError || !org) {
-      return Response.json(
+      return corsResponse(
         { error: { message: 'Invalid API key' } },
-        { status: 401, headers: corsHeaders }
+        401
       )
     }
 
@@ -70,7 +69,7 @@ export async function GET(request: Request) {
       .eq('organization_id', org.id)
       .single()
 
-    return Response.json({
+    return corsResponse({
       success: true,
       organization: {
         id: org.id,
@@ -93,12 +92,12 @@ export async function GET(request: Request) {
         total_cost: usage?.reduce((sum, u) => sum + u.cost, 0) || 0,
         daily_breakdown: usage,
       },
-    }, { headers: corsHeaders })
+    })
   } catch (error) {
     console.error('Usage error:', error)
-    return Response.json(
+    return corsResponse(
       { error: { message: error instanceof Error ? error.message : 'Internal server error' } },
-      { status: 500, headers: corsHeaders }
+      500
     )
   }
 }

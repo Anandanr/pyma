@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { corsResponse } from '@/lib/cors'
 
 function getSupabase() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -11,10 +12,8 @@ function getSupabase() {
   return createClient(supabaseUrl, supabaseServiceRoleKey)
 }
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+export async function OPTIONS() {
+  return corsResponse(null, 200)
 }
 
 export async function POST(request: Request) {
@@ -24,9 +23,9 @@ export async function POST(request: Request) {
     const { email } = body
 
     if (!email) {
-      return Response.json(
+      return corsResponse(
         { error: { message: 'Email is required' } },
-        { status: 400, headers: corsHeaders }
+        400
       )
     }
 
@@ -38,24 +37,24 @@ export async function POST(request: Request) {
       .single()
 
     if (error || !data) {
-      return Response.json(
+      return corsResponse(
         { error: { message: 'No account found with this email' } },
-        { status: 404, headers: corsHeaders }
+        404
       )
     }
 
-    return Response.json({
+    return corsResponse({
       success: true,
       apiKey: data.api_key,
       company: data.company_name,
       plan: data.plan,
       status: data.status,
-    }, { headers: corsHeaders })
+    })
   } catch (error) {
     console.error('Login error:', error)
-    return Response.json(
+    return corsResponse(
       { error: { message: 'Internal server error' } },
-      { status: 500, headers: corsHeaders }
+      500
     )
   }
 }

@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import Stripe from 'stripe'
+import { corsResponse } from '@/lib/cors'
 
 function getSupabase() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -24,6 +25,10 @@ function getStripe() {
   })
 }
 
+export async function OPTIONS() {
+  return corsResponse(null, 200)
+}
+
 export async function POST(request: Request) {
   try {
     const supabase = getSupabase()
@@ -32,27 +37,17 @@ export async function POST(request: Request) {
     const { email, company, plan } = body
 
     if (!email || !company) {
-      return Response.json(
+      return corsResponse(
         { error: { message: 'Email and company are required' } },
-        { 
-          status: 400,
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-          }
-        }
+        400
       )
     }
 
     // Only monthly plan now (with 7-day trial)
     if (plan !== 'monthly') {
-      return Response.json(
+      return corsResponse(
         { error: { message: 'Invalid plan' } },
-        { 
-          status: 400,
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-          }
-        }
+        400
       )
     }
 
@@ -64,14 +59,9 @@ export async function POST(request: Request) {
       .maybeSingle()
 
     if (existingOrg) {
-      return Response.json(
+      return corsResponse(
         { error: { message: 'Email already in use. Please use a different email or log in to your existing account.' } },
-        { 
-          status: 409,
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-          }
-        }
+        409
       )
     }
 
@@ -94,14 +84,9 @@ export async function POST(request: Request) {
       })
 
       if (existingSubscriptions.data.length > 0) {
-        return Response.json(
+        return corsResponse(
           { error: { message: 'This email already has an active subscription.' } },
-          { 
-            status: 409,
-            headers: {
-              'Access-Control-Allow-Origin': '*',
-            }
-          }
+          409
         )
       }
 
@@ -145,26 +130,17 @@ export async function POST(request: Request) {
     // Store temp customer mapping for webhook
     // (In production, you'd store this in a temp table)
     
-    return Response.json({
+    return corsResponse({
       success: true,
       checkout_url: checkoutSession.url,
       sessionId: checkoutSession.id,
       message: 'Redirecting to payment...',
-    }, {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-      }
     })
   } catch (error) {
     console.error('Enroll error:', error)
-    return Response.json(
+    return corsResponse(
       { error: { message: error instanceof Error ? error.message : 'Internal server error' } },
-      { 
-        status: 500,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        }
-      }
+      500
     )
   }
 }
