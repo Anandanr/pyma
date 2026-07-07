@@ -15,7 +15,7 @@ function getSupabase() {
 }
 
 export async function OPTIONS() {
-  return corsResponse(null, 200)
+  return corsResponse({}, 200)
 }
 
 export async function GET(request: Request) {

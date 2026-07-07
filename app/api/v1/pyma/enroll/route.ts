@@ -26,7 +26,7 @@ function getStripe() {
 }
 
 export async function OPTIONS() {
-  return corsResponse(null, 200)
+  return corsResponse({}, 200)
 }
 
 export async function POST(request: Request) {
