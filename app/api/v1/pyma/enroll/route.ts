@@ -69,7 +69,7 @@ export async function POST(request: Request) {
     }
 
     // Check if email already exists in database
-    const { data: existingOrg, error: checkError } = await supabase
+    const { data: existingOrg } = await supabase
       .from('pyma_organizations')
       .select('id, email')
       .eq('email', email)
