@@ -3,7 +3,7 @@
 
 import { type NextRequest } from 'next/server'
 
-export function middleware(request: NextRequest) {
+export function middleware(_request: NextRequest) {
   // Middleware disabled - CORS handled by corsResponse utility in each route handler
   return undefined
 }
