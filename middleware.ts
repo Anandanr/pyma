@@ -1,25 +1,29 @@
 import { type NextRequest, NextResponse } from 'next/server'
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+  'Access-Control-Max-Age': '86400',
+}
+
 export function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname
-  
-  // Handle CORS for API routes
-  if (pathname.startsWith('/api/v1/pyma/')) {
-    // Handle preflight OPTIONS requests
-    if (request.method === 'OPTIONS') {
-      return new NextResponse(null, {
-        status: 200,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-          'Access-Control-Max-Age': '86400',
-        },
-      })
-    }
+  // Handle OPTIONS requests immediately for CORS preflight
+  if (request.method === 'OPTIONS') {
+    return new NextResponse(null, {
+      status: 200,
+      headers: corsHeaders,
+    })
   }
+
+  // Add CORS headers to all responses
+  const response = NextResponse.next()
   
-  return NextResponse.next()
+  Object.entries(corsHeaders).forEach(([key, value]) => {
+    response.headers.set(key, value)
+  })
+  
+  return response
 }
 
 export const config = {
