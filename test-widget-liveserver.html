@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyMA Widget Test - Live Server</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .status-box {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            color: #667eea;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .status-box strong {
+            color: #667eea;
+        }
+
+        .instructions {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            color: #1565c0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .debug-log {
+            background: #222;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+            line-height: 1.4;
+        }
+
+        .log-entry {
+            margin-bottom: 6px;
+        }
+
+        .log-success { color: #0f0; }
+        .log-error { color: #f00; }
+        .log-info { color: #0f0; }
+
+        .cta {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 PyMA Widget Test</h1>
+        <p class="subtitle">Testing with Live Server (Port 5500)</p>
+
+        <div class="status-box">
+            <strong>Test Setup:</strong><br>
+            📍 Page: http://127.0.0.1:5500<br>
+            📍 Widget: http://localhost:3000/chatbot.js<br>
+            📍 API: http://localhost:3000/api/v1/pyma
+        </div>
+
+        <div class="instructions">
+            ✅ Make sure your Next.js dev server is running on port 3000<br>
+            ✅ The purple chat widget should appear in the bottom-right corner<br>
+            ✅ Check the debug log below for any errors
+        </div>
+
+        <div id="debugLog" class="debug-log"></div>
+
+        <div class="cta">
+            <p>👇 <strong>Look for the purple chat bubble in the bottom-right corner</strong> 👇</p>
+        </div>
+    </div>
+
+    <script>
+        const debugLog = document.getElementById('debugLog');
+
+        function addLog(message, type = 'info') {
+            console.log(`[${type.toUpperCase()}] ${message}`);
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${type.toUpperCase()}] ${message}`;
+            debugLog.appendChild(entry);
+            debugLog.scrollTop = debugLog.scrollHeight;
+        }
+
+        addLog('Initializing widget...');
+        addLog('Loading chatbot.js from http://localhost:3000/chatbot.js');
+
+        // Load the widget script
+        const script = document.createElement('script');
+        script.src = 'http://localhost:3000/chatbot.js';
+        script.dataset.apiKey = 'pyma_afbc44a5899b4cbeb1cbed4dea4c20ad';
+        script.dataset.apiUrl = 'http://localhost:3000/api/v1/pyma';
+
+        script.onload = function() {
+            addLog('✓ Widget script loaded successfully', 'success');
+            
+            // Check if widget is in DOM
+            setTimeout(() => {
+                const widget = document.getElementById('pyma-widget');
+                const trigger = document.getElementById('pyma-trigger');
+                
+                if (widget || trigger) {
+                    addLog('✓ Widget element found in DOM', 'success');
+                } else {
+                    addLog('✗ Widget element NOT found in DOM', 'error');
+                }
+
+                if (window.PyMA) {
+                    addLog('✓ window.PyMA API is available', 'success');
+                } else {
+                    addLog('✗ window.PyMA API not found', 'error');
+                }
+            }, 500);
+        };
+
+        script.onerror = function() {
+            addLog('✗ Failed to load widget script from http://localhost:3000/chatbot.js', 'error');
+            addLog('Make sure Next.js dev server is running on port 3000', 'error');
+        };
+
+        document.head.appendChild(script);
+
+        // Catch any global errors
+        window.addEventListener('error', (e) => {
+            addLog(`✗ JS Error: ${e.message}`, 'error');
+        });
+
+        // Test API connectivity after a delay
+        setTimeout(() => {
+            addLog('Testing API connectivity...');
+            
+            fetch('http://localhost:3000/api/v1/pyma/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    api_key: 'pyma_afbc44a5899b4cbeb1cbed4dea4c20ad',
+                    message: 'test',
+                }),
+            })
+            .then(res => {
+                if (res.ok) {
+                    addLog('✓ API is reachable and responding', 'success');
+                } else {
+                    addLog(`✗ API responded with status ${res.status}`, 'error');
+                }
+            })
+            .catch(err => {
+                addLog(`✗ Cannot reach API: ${err.message}`, 'error');
+                addLog('Make sure Next.js dev server is running on http://localhost:3000', 'error');
+            });
+        }, 2000);
+    </script>
+</body>
+</html>

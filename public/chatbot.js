@@ -10,16 +10,31 @@
  */
 
 (function () {
+  // Get the script tag that loaded this file
+  let scriptTag = document.currentScript;
+  if (!scriptTag) {
+    // Fallback for older browsers or when loaded cross-origin
+    const scripts = document.getElementsByTagName('script');
+    for (let i = scripts.length - 1; i >= 0; i--) {
+      if (scripts[i].src && scripts[i].src.includes('chatbot.js')) {
+        scriptTag = scripts[i];
+        break;
+      }
+    }
+  }
+
   // Configuration
   const config = {
-    apiKey: document.currentScript.dataset.apiKey,
-    position: document.currentScript.dataset.position || 'bottom-right',
-    theme: document.currentScript.dataset.theme || 'light',
-    title: document.currentScript.dataset.title || 'Chat with us',
-    placeholder: document.currentScript.dataset.placeholder || 'Ask a question...',
-    hideOnMobile: document.currentScript.dataset.hideOnMobile === 'true',
-    apiUrl: 'https://api.pym.ink/v1/pyma',
+    apiKey: scriptTag ? scriptTag.dataset.apiKey : null,
+    position: scriptTag ? (scriptTag.dataset.position || 'bottom-right') : 'bottom-right',
+    theme: scriptTag ? (scriptTag.dataset.theme || 'light') : 'light',
+    title: scriptTag ? (scriptTag.dataset.title || 'Chat with us') : 'Chat with us',
+    placeholder: scriptTag ? (scriptTag.dataset.placeholder || 'Ask a question...') : 'Ask a question...',
+    hideOnMobile: scriptTag ? (scriptTag.dataset.hideOnMobile === 'true') : false,
+    apiUrl: scriptTag ? (scriptTag.dataset.apiUrl || 'http://localhost:3001/api/v1/pyma') : 'http://localhost:3001/api/v1/pyma',
   }
+
+  console.log('[PyMA Widget] Config:', config);
 
   // Validate API key
   if (!config.apiKey || !config.apiKey.startsWith('pyma_')) {
@@ -29,8 +44,11 @@
 
   // Create widget container
   function createWidget() {
+    console.log('[PyMA Widget] Creating widget...');
+    
     // Check mobile
     if (config.hideOnMobile && window.innerWidth < 768) {
+      console.log('[PyMA Widget] Hidden on mobile');
       return
     }
 
@@ -163,6 +181,8 @@
 
     document.body.insertAdjacentHTML('beforeend', html)
 
+    console.log('[PyMA Widget] Widget HTML inserted into DOM');
+
     // Event listeners
     const widget = document.getElementById('pyma-widget')
     const trigger = document.getElementById('pyma-trigger')
@@ -259,9 +279,14 @@
 
   // Initialize when DOM is ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', createWidget)
+    console.log('[PyMA Widget] DOM not ready, waiting for DOMContentLoaded');
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('[PyMA Widget] DOMContentLoaded fired');
+      createWidget();
+    });
   } else {
-    createWidget()
+    console.log('[PyMA Widget] DOM ready, creating widget immediately');
+    createWidget();
   }
 
   // Expose API for custom control

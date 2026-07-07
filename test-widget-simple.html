@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyMA Widget Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            color: #1565c0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .status {
+            background: #f0f4ff;
+            border: 1px solid #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .status h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .status p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .cta-text {
+            text-align: center;
+            color: #666;
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .highlight {
+            color: #667eea;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 PyMA Widget Test</h1>
+        <p class="subtitle">Testing the pymA AI Support Chatbot Widget</p>
+
+        <div class="info-box">
+            ✅ The pymA chatbot widget is embedded on this page. Look for the purple chat bubble in the bottom-right corner!
+        </div>
+
+        <div class="status">
+            <h3>Widget Status</h3>
+            <p>
+                <strong>API Key:</strong> <code>pyma_afbc44a5899b4cbeb1cbed4dea4c20ad</code><br>
+                <strong>Service:</strong> Groq AI Integration<br>
+                <strong>Status:</strong> <span class="highlight">Active ✓</span>
+            </p>
+        </div>
+
+        <p>This is a test page to verify the pymA chatbot widget is working correctly. The widget should appear automatically in the bottom-right corner of the screen.</p>
+
+        <p style="margin-top: 20px;">Try clicking the chat bubble and asking a question to test the AI support functionality!</p>
+
+        <div class="cta-text">
+            <p>👉 <strong>Look for the purple chat bubble in the bottom-right corner</strong> 👈</p>
+        </div>
+    </div>
+
+    <!-- PyMA Chatbot Widget -->
+    <script src="http://localhost:3000/chatbot.js" 
+      data-api-key="pyma_afbc44a5899b4cbeb1cbed4dea4c20ad">
+    </script>
+</body>
+</html>

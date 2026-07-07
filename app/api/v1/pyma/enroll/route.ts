@@ -24,6 +24,18 @@ function getStripe() {
   })
 }
 
+export async function OPTIONS(request: Request) {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400',
+    },
+  })
+}
+
 export async function POST(request: Request) {
   try {
     const supabase = getSupabase()
@@ -34,7 +46,12 @@ export async function POST(request: Request) {
     if (!email || !company) {
       return Response.json(
         { error: { message: 'Email and company are required' } },
-        { status: 400 }
+        { 
+          status: 400,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+          }
+        }
       )
     }
 
@@ -42,7 +59,12 @@ export async function POST(request: Request) {
     if (plan !== 'monthly') {
       return Response.json(
         { error: { message: 'Invalid plan' } },
-        { status: 400 }
+        { 
+          status: 400,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+          }
+        }
       )
     }
 
@@ -56,7 +78,12 @@ export async function POST(request: Request) {
     if (existingOrg) {
       return Response.json(
         { error: { message: 'Email already in use. Please use a different email or log in to your existing account.' } },
-        { status: 409 }
+        { 
+          status: 409,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+          }
+        }
       )
     }
 
@@ -81,7 +108,12 @@ export async function POST(request: Request) {
       if (existingSubscriptions.data.length > 0) {
         return Response.json(
           { error: { message: 'This email already has an active subscription.' } },
-          { status: 409 }
+          { 
+            status: 409,
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+            }
+          }
         )
       }
 
@@ -130,12 +162,21 @@ export async function POST(request: Request) {
       checkout_url: checkoutSession.url,
       sessionId: checkoutSession.id,
       message: 'Redirecting to payment...',
+    }, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      }
     })
   } catch (error) {
     console.error('Enroll error:', error)
     return Response.json(
       { error: { message: error instanceof Error ? error.message : 'Internal server error' } },
-      { status: 500 }
+      { 
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        }
+      }
     )
   }
 }

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyMA Widget v2 Test</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 40px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+        }
+        h1 { color: #667eea; }
+        p { line-height: 1.6; color: #666; }
+        .info { background: #e3f2fd; padding: 15px; border-left: 4px solid #2196f3; border-radius: 4px; margin: 20px 0; }
+        code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 PyMA Widget v2 Test</h1>
+        
+        <p>This page is testing the new, simpler chatbot widget.</p>
+        
+        <div class="info">
+            <strong>✓ Widget Status:</strong><br>
+            - Check the browser console (F12) for [PyMA] logs<br>
+            - The purple chat bubble should appear in the bottom-right corner<br>
+            - Click it to open the chat widget
+        </div>
+
+        <p>Try asking the chatbot a question! It's powered by Groq AI.</p>
+        
+        <div class="info">
+            <strong>📝 Debug Info:</strong><br>
+            - Open F12 → Console tab<br>
+            - Look for messages starting with <code>[PyMA]</code><br>
+            - These will tell us exactly what's happening
+        </div>
+    </div>
+
+    <!-- Load the new widget script -->
+    <script src="http://localhost:3000/chatbot-v2.js" data-api-key="pyma_afbc44a5899b4cbeb1cbed4dea4c20ad"></script>
+</body>
+</html>

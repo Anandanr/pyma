@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyMA Widget Debug Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .debug-log {
+            background: #222;
+            color: #0f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        .log-line {
+            margin-bottom: 8px;
+        }
+        .info { color: #0f0; }
+        .error { color: #f00; }
+        .warning { color: #ff0; }
+        .success { color: #0f0; }
+    </style>
+</head>
+<body>
+    <h1>PyMA Widget Debug</h1>
+    <div class="debug-log" id="debugLog"></div>
+
+    <script>
+        const logs = [];
+        
+        function log(message, type = 'info') {
+            console.log(`[${type.toUpperCase()}] ${message}`);
+            logs.push({ message, type });
+            updateLog();
+        }
+
+        function updateLog() {
+            const logDiv = document.getElementById('debugLog');
+            logDiv.innerHTML = logs.map(l => 
+                `<div class="log-line ${l.type}">[${l.type.toUpperCase()}] ${l.message}</div>`
+            ).join('');
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        // Check script loading
+        log('Starting widget test...');
+
+        // Test 1: Check if script exists
+        const scriptUrl = 'http://localhost:3000/chatbot.js';
+        log(`Attempting to load widget from: ${scriptUrl}`);
+
+        // Test 2: Add script tag
+        const script = document.createElement('script');
+        script.src = scriptUrl;
+        script.dataset.apiKey = 'pyma_afbc44a5899b4cbeb1cbed4dea4c20ad';
+        script.dataset.position = 'bottom-right';
+
+        script.onload = function() {
+            log('✓ Widget script loaded successfully', 'success');
+            setTimeout(() => {
+                if (document.getElementById('pyma-widget')) {
+                    log('✓ Widget element found in DOM', 'success');
+                } else if (document.getElementById('pyma-trigger')) {
+                    log('✓ Widget trigger button found in DOM', 'success');
+                } else {
+                    log('✗ Widget elements not found in DOM', 'error');
+                }
+            }, 500);
+        };
+
+        script.onerror = function() {
+            log('✗ Failed to load widget script', 'error');
+            log('Check if server is running on http://localhost:3000', 'warning');
+        };
+
+        document.head.appendChild(script);
+        log('Script tag added to page');
+
+        // Test 3: Check for errors
+        window.addEventListener('error', (e) => {
+            log(`✗ Error: ${e.message}`, 'error');
+        });
+
+        // Test 4: Check window.PyMA
+        setTimeout(() => {
+            if (window.PyMA) {
+                log('✓ window.PyMA API found', 'success');
+                log('Available methods: show(), hide()', 'info');
+            } else {
+                log('✗ window.PyMA API not found', 'warning');
+            }
+        }, 1000);
+    </script>
+
+    <hr style="margin: 40px 0;">
+    <p><strong>If you see "Script loaded successfully" above, the widget is working!</strong></p>
+    <p>The purple chat bubble should be visible in the bottom-right corner.</p>
+</body>
+</html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pymA Chatbot Widget Demo - Client Website</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .demo-header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .demo-header h1 {
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+
+        .demo-header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .websites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .website-demo {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .website-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .website-header h2 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .website-header p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .website-content {
+            flex: 1;
+            padding: 30px;
+            background: #fafafa;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .website-content h3 {
+            color: #1a1a1a;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .website-content p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .features-list {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .features-list li {
+            padding: 8px 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .features-list li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .cta-button {
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            align-self: flex-start;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+
+        .cta-button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .widget-note {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #1565c0;
+        }
+
+        .info-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        .info-section h2 {
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            margin: 15px 0;
+        }
+
+        .code-block code {
+            color: #f8f8f2;
+        }
+
+        .code-comment {
+            color: #75715e;
+        }
+
+        .code-tag {
+            color: #f92672;
+        }
+
+        .code-attr {
+            color: #a1efe4;
+        }
+
+        .code-string {
+            color: #e6db74;
+        }
+
+        @media (max-width: 768px) {
+            .websites-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .website-content {
+                min-height: auto;
+            }
+        }
+
+        /* Instructions */
+        .instructions {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            font-size: 14px;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>pymA Chatbot Widget Demo</h1>
+            <p>See how your customers experience the pymA AI support chatbot on their websites</p>
+        </div>
+
+        <div class="instructions">
+            <strong>📌 How it works:</strong> The chatbot widget (bottom-right corner) appears on client websites when they embed the script. It provides AI-powered customer support directly on their site.
+        </div>
+
+        <div class="websites-grid">
+            <!-- Website 1: SaaS Company -->
+            <div class="website-demo">
+                <div class="website-header">
+                    <h2>TechCorp SaaS</h2>
+                    <p>www.techcorp.example.com</p>
+                </div>
+                <div class="website-content">
+                    <div>
+                        <h3>Welcome to TechCorp</h3>
+                        <p>Our powerful platform helps teams collaborate and scale faster than ever.</p>
+                        <ul class="features-list">
+                            <li>Real-time collaboration</li>
+                            <li>Advanced analytics</li>
+                            <li>Enterprise security</li>
+                            <li>24/7 AI support</li>
+                        </ul>
+                        <button class="cta-button">Start Free Trial</button>
+                    </div>
+                    <div class="widget-note">
+                        👉 <strong>Notice the pymA chat button in the bottom-right corner?</strong> That's your widget in action!
+                    </div>
+                </div>
+            </div>
+
+            <!-- Website 2: E-commerce -->
+            <div class="website-demo">
+                <div class="website-header">
+                    <h2>ShopHub E-commerce</h2>
+                    <p>www.shophub.example.com</p>
+                </div>
+                <div class="website-content">
+                    <div>
+                        <h3>Premium Products, Premium Support</h3>
+                        <p>Browse our curated collection of high-quality products. Need help? Our AI assistant is here to help instantly.</p>
+                        <ul class="features-list">
+                            <li>Fast shipping worldwide</li>
+                            <li>Money-back guarantee</li>
+                            <li>Easy returns</li>
+                            <li>Instant AI support</li>
+                        </ul>
+                        <button class="cta-button">Shop Now</button>
+                    </div>
+                    <div class="widget-note">
+                        👉 <strong>pymA widget is ready to answer customer questions instantly!</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Website 3: Support Portal -->
+            <div class="website-demo">
+                <div class="website-header">
+                    <h2>Support Portal</h2>
+                    <p>support.company.example.com</p>
+                </div>
+                <div class="website-content">
+                    <div>
+                        <h3>Get Instant Help</h3>
+                        <p>Have a question? Our AI assistant can help with most common issues in seconds, or connect you to a human agent.</p>
+                        <ul class="features-list">
+                            <li>AI-powered responses</li>
+                            <li>Knowledge base access</li>
+                            <li>Live agent escalation</li>
+                            <li>Available 24/7</li>
+                        </ul>
+                        <button class="cta-button">Contact Support</button>
+                    </div>
+                    <div class="widget-note">
+                        👉 <strong>Talk to our AI support agent now! Try asking a question.</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h2>📝 How to Embed on Your Website</h2>
+            <p>Clients just need to add this one line of code to their website:</p>
+            
+            <div class="code-block">
+<span class="code-tag">&lt;script</span> <span class="code-attr">src</span><span class="code-tag">=</span><span class="code-string">"https://widget.pym.ink/chatbot.js"</span>
+  <span class="code-attr">data-api-key</span><span class="code-tag">=</span><span class="code-string">"pyma_afbc44a5899b4cbeb1cbed4dea4c20ad"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;/script&gt;</span>
+            </div>
+
+            <p><strong>That's it!</strong> The widget will:</p>
+            <ul class="features-list" style="margin-left: 0;">
+                <li>Appear in the bottom-right corner</li>
+                <li>Start handling customer conversations instantly</li>
+                <li>Learn from your knowledge base</li>
+                <li>Escalate complex issues to humans if needed</li>
+                <li>Work on all modern browsers</li>
+            </ul>
+        </div>
+
+        <div class="info-section" style="background: #f0f4ff; border-left: 4px solid #667eea;">
+            <h2>✨ Widget Features</h2>
+            <ul class="features-list" style="margin-left: 0;">
+                <li><strong>AI-Powered:</strong> Understands natural language and context</li>
+                <li><strong>Customizable:</strong> Brand colors, welcome message, availability</li>
+                <li><strong>Analytics:</strong> Track conversations and customer satisfaction</li>
+                <li><strong>Integration:</strong> Works with your CRM and support tools</li>
+                <li><strong>Secure:</strong> End-to-end encryption for customer data</li>
+                <li><strong>Fast:</strong> Lightweight script, minimal performance impact</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- PyMA Chatbot Widget -->
+    <script src="https://widget.pym.ink/chatbot.js"
+      data-api-key="pyma_afbc44a5899b4cbeb1cbed4dea4c20ad">
+    </script>
+</body>
+</html>

@@ -13,6 +13,19 @@ function getSupabase() {
   return createClient(supabaseUrl, supabaseServiceRoleKey)
 }
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+}
+
+export async function OPTIONS(request: Request) {
+  return new Response(null, {
+    status: 200,
+    headers: corsHeaders,
+  })
+}
+
 export async function GET(request: Request) {
   try {
     const supabase = getSupabase()
@@ -22,7 +35,7 @@ export async function GET(request: Request) {
     if (!api_key) {
       return Response.json(
         { error: { message: 'API key is required' } },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       )
     }
 
@@ -36,7 +49,7 @@ export async function GET(request: Request) {
     if (orgError || !org) {
       return Response.json(
         { error: { message: 'Invalid API key' } },
-        { status: 401 }
+        { status: 401, headers: corsHeaders }
       )
     }
 
@@ -87,12 +100,12 @@ export async function GET(request: Request) {
         total_cost: usage?.reduce((sum, u) => sum + u.cost, 0) || 0,
         daily_breakdown: usage,
       },
-    })
+    }, { headers: corsHeaders })
   } catch (error) {
     console.error('Usage error:', error)
     return Response.json(
       { error: { message: error instanceof Error ? error.message : 'Internal server error' } },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     )
   }
 }

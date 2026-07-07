@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyMA Widget Test - Embedded</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 40px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+        }
+        h1 { color: #667eea; }
+        p { line-height: 1.6; color: #666; }
+        .info { background: #e3f2fd; padding: 15px; border-left: 4px solid #2196f3; border-radius: 4px; margin: 20px 0; }
+        code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 PyMA Widget - Embedded Test</h1>
+        
+        <p>This page has the PyMA chatbot widget embedded directly.</p>
+        
+        <div class="info">
+            <strong>✓ Expected:</strong><br>
+            - Purple chat bubble in bottom-right corner<br>
+            - Click to open chat<br>
+            - Ask a question to test the AI
+        </div>
+
+        <p>The chatbot is powered by Groq AI and reads from your knowledge base.</p>
+    </div>
+
+    <script>
+      console.log('[PyMA] Embedded widget starting...');
+
+      (function () {
+        try {
+          console.log('[PyMA] Creating widget elements...');
+          
+          const apiKey = 'pyma_1dd0ea842b8a4e4c8ba2e2c3f023904e';
+
+          // Create bubble button
+          const bubble = document.createElement('button');
+          bubble.id = 'pyma-bubble';
+          bubble.textContent = '💬';
+          bubble.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 999998;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            transition: transform 0.2s;
+          `;
+
+          // Create widget window
+          const widget = document.createElement('div');
+          widget.id = 'pyma-widget';
+          widget.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 380px;
+            max-width: 90vw;
+            height: 500px;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 5px 40px rgba(0, 0, 0, 0.16);
+            display: none;
+            flex-direction: column;
+            z-index: 999999;
+          `;
+
+          widget.innerHTML = `
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 16px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-weight: 600; font-size: 14px;">PyMA Support</div>
+                <div style="font-size: 12px; opacity: 0.9;">Typically replies instantly</div>
+              </div>
+              <button id="pyma-close" style="background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; font-size: 18px;">−</button>
+            </div>
+            <div id="pyma-messages" style="flex: 1; overflow-y: auto; padding: 16px; background: #fafafa;">
+              <div style="text-align: center; color: #999; font-size: 12px;">
+                👋 Hi! How can we help?
+              </div>
+            </div>
+            <div style="padding: 12px; border-top: 1px solid #eee; display: flex; gap: 8px;">
+              <input id="pyma-input" type="text" placeholder="Ask a question..." style="flex: 1; border: 1px solid #ddd; border-radius: 20px; padding: 8px 14px; font-size: 13px; outline: none; font-family: inherit;">
+              <button id="pyma-send" style="background: #667eea; color: white; border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; font-size: 18px;">➤</button>
+            </div>
+          `;
+
+          // Add to DOM
+          document.body.appendChild(bubble);
+          document.body.appendChild(widget);
+
+          console.log('[PyMA] Widget elements added to DOM ✓');
+
+          // Get references
+          const input = widget.querySelector('#pyma-input');
+          const sendBtn = widget.querySelector('#pyma-send');
+          const messagesDiv = widget.querySelector('#pyma-messages');
+          const closeBtn = widget.querySelector('#pyma-close');
+
+          // Open/close handlers
+          bubble.addEventListener('click', () => {
+            console.log('[PyMA] Opening widget');
+            widget.style.display = 'flex';
+            bubble.style.display = 'none';
+            input.focus();
+          });
+
+          closeBtn.addEventListener('click', () => {
+            console.log('[PyMA] Closing widget');
+            widget.style.display = 'none';
+            bubble.style.display = 'block';
+          });
+
+          // Send message
+          async function sendMessage() {
+            const message = input.value.trim();
+            if (!message) return;
+
+            console.log('[PyMA] Sending message:', message);
+
+            // Add user message
+            const userMsg = document.createElement('div');
+            userMsg.style.cssText = `
+              margin-bottom: 12px;
+              text-align: right;
+            `;
+            userMsg.innerHTML = `<div style="background: #667eea; color: white; padding: 10px 14px; border-radius: 12px; display: inline-block; max-width: 80%; word-wrap: break-word;">${message}</div>`;
+            messagesDiv.appendChild(userMsg);
+
+            input.value = '';
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            // Send to API
+            try {
+              const response = await fetch('http://localhost:3001/api/v1/pyma/chat', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  api_key: apiKey,
+                  message: message,
+                }),
+              });
+
+              const data = await response.json();
+              console.log('[PyMA] API response:', data);
+
+              if (response.ok && data.response) {
+                const botMsg = document.createElement('div');
+                botMsg.style.cssText = `
+                  margin-bottom: 12px;
+                  text-align: left;
+                `;
+                botMsg.innerHTML = `<div style="background: #e8eaf6; color: #1a1a1a; padding: 10px 14px; border-radius: 12px; display: inline-block; max-width: 80%; word-wrap: break-word;">${data.response}</div>`;
+                messagesDiv.appendChild(botMsg);
+              } else {
+                console.error('[PyMA] API error:', data);
+                const errorMsg = document.createElement('div');
+                errorMsg.style.cssText = `
+                  margin-bottom: 12px;
+                  text-align: left;
+                `;
+                errorMsg.innerHTML = `<div style="background: #ffebee; color: #c33; padding: 10px 14px; border-radius: 12px; display: inline-block; max-width: 80%;">Error: ${data.error?.message || 'Unknown error'}</div>`;
+                messagesDiv.appendChild(errorMsg);
+              }
+            } catch (err) {
+              console.error('[PyMA] Fetch error:', err);
+              const errorMsg = document.createElement('div');
+              errorMsg.style.cssText = `
+                margin-bottom: 12px;
+                text-align: left;
+              `;
+              errorMsg.innerHTML = `<div style="background: #ffebee; color: #c33; padding: 10px 14px; border-radius: 12px; display: inline-block; max-width: 80%;">Error: ${err.message}</div>`;
+              messagesDiv.appendChild(errorMsg);
+            }
+
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+          }
+
+          sendBtn.addEventListener('click', sendMessage);
+          input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+          });
+
+          console.log('[PyMA] Widget initialized successfully ✓✓✓');
+
+        } catch (err) {
+          console.error('[PyMA] Fatal error:', err);
+        }
+      })();
+    </script>
+</body>
+</html>

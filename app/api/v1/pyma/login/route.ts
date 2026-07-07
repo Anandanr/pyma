@@ -11,6 +11,19 @@ function getSupabase() {
   return createClient(supabaseUrl, supabaseServiceRoleKey)
 }
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+}
+
+export async function OPTIONS(request: Request) {
+  return new Response(null, {
+    status: 200,
+    headers: corsHeaders,
+  })
+}
+
 export async function POST(request: Request) {
   try {
     const supabase = getSupabase()
@@ -20,7 +33,7 @@ export async function POST(request: Request) {
     if (!email) {
       return Response.json(
         { error: { message: 'Email is required' } },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       )
     }
 
@@ -34,7 +47,7 @@ export async function POST(request: Request) {
     if (error || !data) {
       return Response.json(
         { error: { message: 'No account found with this email' } },
-        { status: 404 }
+        { status: 404, headers: corsHeaders }
       )
     }
 
@@ -44,12 +57,12 @@ export async function POST(request: Request) {
       company: data.company_name,
       plan: data.plan,
       status: data.status,
-    })
+    }, { headers: corsHeaders })
   } catch (error) {
     console.error('Login error:', error)
     return Response.json(
       { error: { message: 'Internal server error' } },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     )
   }
 }

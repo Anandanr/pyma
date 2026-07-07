@@ -11,6 +11,18 @@ function getSupabase() {
   return createClient(supabaseUrl, supabaseServiceRoleKey)
 }
 
+// CORS headers
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+}
+
+// Handle OPTIONS requests
+export async function OPTIONS(request: Request) {
+  return Response.json({}, { headers: corsHeaders })
+}
+
 export async function POST(request: Request) {
   try {
     const supabase = getSupabase()
@@ -20,7 +32,7 @@ export async function POST(request: Request) {
     if (!api_key || !message) {
       return Response.json(
         { error: { message: 'API key and message are required' } },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       )
     }
 
@@ -34,7 +46,7 @@ export async function POST(request: Request) {
     if (orgError || !org) {
       return Response.json(
         { error: { message: 'Invalid API key' } },
-        { status: 401 }
+        { status: 401, headers: corsHeaders }
       )
     }
 
@@ -44,14 +56,54 @@ export async function POST(request: Request) {
       if (new Date() > trialEnd) {
         return Response.json(
           { error: { message: 'Free trial has expired. Please upgrade to continue.' } },
-          { status: 403 }
+          { status: 403, headers: corsHeaders }
         )
       }
     }
 
-    // TODO: Call Claude/OpenAI API with FAQ knowledge base
-    // For now, return a mock response
-    const botResponse = `This is a test response to: "${message}". In production, this would call Claude with your FAQ knowledge base.`
+    // Fetch FAQs for context
+    const { data: faqs } = await supabase
+      .from('pyma_faqs')
+      .select('title, content')
+      .eq('organization_id', org.id)
+      .limit(10)
+
+    // Build context from FAQs
+    const faqContext = faqs && faqs.length > 0
+      ? `Here are relevant FAQs:\n\n${faqs.map((f: any) => `Q: ${f.title}\nA: ${f.content}`).join('\n\n')}`
+      : 'No FAQs uploaded yet.'
+
+    // Call Groq AI
+    const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'mixtral-8x7b-32768',
+        messages: [
+          {
+            role: 'system',
+            content: `You are a helpful customer support assistant. Answer the customer's question based on the provided FAQs. Be concise and helpful.\n\n${faqContext}`,
+          },
+          {
+            role: 'user',
+            content: message,
+          },
+        ],
+        temperature: 0.7,
+        max_tokens: 500,
+      }),
+    })
+
+    let botResponse: string
+    if (groqResponse.ok) {
+      const groqData = await groqResponse.json()
+      botResponse = groqData.choices[0]?.message?.content || 'No response from AI'
+    } else {
+      botResponse = `I encountered an issue processing your request. ${faqs && faqs.length > 0 ? 'Based on our FAQs: ' + faqs.map((f: any) => f.content).join(' ') : 'Please try again.'}`
+    }
 
     // Track usage
     const today = new Date().toISOString().split('T')[0]
@@ -97,12 +149,12 @@ export async function POST(request: Request) {
       usage: {
         messages_today: (usage?.messages_count || 0) + 1,
       },
-    })
+    }, { headers: corsHeaders })
   } catch (error) {
     console.error('Chat error:', error)
     return Response.json(
       { error: { message: error instanceof Error ? error.message : 'Internal server error' } },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     )
   }
 }
