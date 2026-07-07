@@ -25,7 +25,7 @@ function getStripe() {
 }
 
 export async function OPTIONS() {
-  return new Response(null, {
+  return new Response('', {
     status: 200,
     headers: {
       'Access-Control-Allow-Origin': '*',

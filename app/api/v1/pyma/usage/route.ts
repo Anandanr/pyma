@@ -20,7 +20,7 @@ const corsHeaders = {
 }
 
 export async function OPTIONS() {
-  return new Response(null, {
+  return new Response('', {
     status: 200,
     headers: corsHeaders,
   })
