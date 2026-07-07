@@ -47,9 +47,9 @@ export async function POST(request: Request) {
     if (org.plan === 'free-trial') {
       const trialEnd = new Date(org.trial_end_date)
       if (new Date() > trialEnd) {
-        return Response.json(
+        return corsResponse(
           { error: { message: 'Free trial has expired. Please upgrade to continue.' } },
-          { status: 403, headers: corsHeaders }
+          403
         )
       }
     }
@@ -136,18 +136,18 @@ export async function POST(request: Request) {
       cost: 0,
     })
 
-    return Response.json({
+    return corsResponse({
       success: true,
       response: botResponse,
       usage: {
         messages_today: (usage?.messages_count || 0) + 1,
       },
-    }, { headers: corsHeaders })
+    })
   } catch (error) {
     console.error('Chat error:', error)
-    return Response.json(
+    return corsResponse(
       { error: { message: error instanceof Error ? error.message : 'Internal server error' } },
-      { status: 500, headers: corsHeaders }
+      500
     )
   }
 }
