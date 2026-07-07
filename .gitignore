@@ -8,3 +8,5 @@ build/
 *.pem
 .vercel/
 .turbo/
+.vercel
+.env*
